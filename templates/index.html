@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tirupati House Price Prediction</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #1e1f2e;
+            --bg-secondary: #282a3a;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --accent: #e4959e;
+            --sidebar-width: 250px;
+        }
+
+        .light-mode {
+            --bg-primary: #f0f2f5;
+            --bg-secondary: #ffffff;
+            --text-primary: #1e1f2e;
+            --text-secondary: #666666;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.3s, color 0.3s;
+            margin: 0;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--bg-secondary);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            transition: background-color 0.3s;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s, background-color 0.3s;
+            margin: 0.25rem 0.5rem;
+            border-radius: 0.5rem;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+
+        .nav-item i {
+            margin-right: 0.75rem;
+        }
+
+        .header {
+            background-color: var(--bg-secondary);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            background-color: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .input-field {
+            background-color: var(--bg-primary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            width: 100%;
+            transition: border-color 0.3s;
+            margin-top: 0.5rem;
+        }
+
+        .input-field:focus {
+            border-color: var(--accent);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(228, 149, 158, 0.2);
+        }
+
+        .input-field:disabled, .input-field[readonly] {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            transition: opacity 0.3s;
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        .theme-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background-color: var(--bg-primary);
+            border-radius: 15px;
+            cursor: pointer;
+            padding: 2px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .switch-handle {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 26px;
+            height: 26px;
+            background-color: var(--accent);
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .light-mode .switch-handle {
+            transform: translateX(30px);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="p-4">
+            <h1 class="text-xl font-bold text-white dark:text-white flex items-center" style="color: var(--text-primary);">
+                <i class="material-icons mr-2">home</i>
+                House Price Prediction
+            </h1>
+        </div>
+        <nav class="mt-8">
+            <a href="#" class="nav-item active">
+                <i class="material-icons">dashboard</i>
+                Price Prediction
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h2 class="text-xl font-semibold">Price Prediction</h2>
+            <div class="flex items-center gap-4">
+                <div class="theme-switch" onclick="toggleTheme()" title="Toggle theme">
+                    <div class="switch-handle"></div>
+                </div>
+                <div class="user-profile">
+                    <div class="avatar">R</div>
+                    <span class="text-sm font-medium">Rishil</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Location Selection -->
+            <div class="form-group">
+                <h3 class="text-lg font-semibold mb-4">Location Details</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Location in Tirupati</label>
+                        <select name="location" onchange="updateLocationDetails(this.value)" class="input-field" required>
+                            <option value="">Select location</option>
+                            <option value="Sri Balaji Residency - Tirumala Bypass Road" data-price="5200" data-nearby="Tirumala, Shopping Mall, Temple" data-society="Sri Balaji Residency">Sri Balaji Residency - Tirumala Bypass Road</option>
+                            <option value="Sapthagiri Heights - Air Bypass Road" data-price="4800" data-nearby="Railway Station, Bus Stand, Market" data-society="Sapthagiri Heights">Sapthagiri Heights - Air Bypass Road</option>
+                            <option value="Venkatadri Towers - Karakambadi Road" data-price="4500" data-nearby="IT Park, Schools, Hospitals" data-society="Venkatadri Towers">Venkatadri Towers - Karakambadi Road</option>
+                            <option value="Sri Padmavati Villa - Renigunta Road" data-price="4200" data-nearby="Airport, Railway Junction, Markets" data-society="Sri Padmavati Villa">Sri Padmavati Villa - Renigunta Road</option>
+                            <option value="Alipiri Residency - Alipiri Road" data-price="5000" data-nearby="Tirumala Footway, Bus Stand, Temple" data-society="Alipiri Residency">Alipiri Residency - Alipiri Road</option>
+                            <option value="Tirumala View Homes - Kapila Theertham Road" data-price="4800" data-nearby="Temple, Park, Schools" data-society="Tirumala View Homes">Tirumala View Homes - Kapila Theertham Road</option>
+                            <option value="SV University Villa - SV University Road" data-price="4300" data-nearby="University, Library, Hospital" data-society="SV University Villa">SV University Villa - SV University Road</option>
+                            <option value="Tiruchanur Gardens - Tiruchanur Road" data-price="4600" data-nearby="Temple, Market, Bus Stop" data-society="Tiruchanur Gardens">Tiruchanur Gardens - Tiruchanur Road</option>
+                            <option value="Padmavathi Heights - Padmavathi Nagar" data-price="4700" data-nearby="Shopping Complex, Schools, Park" data-society="Padmavathi Heights">Padmavathi Heights - Padmavathi Nagar</option>
+                            <option value="Sri Venkateswara Villa - Chandragiri Road" data-price="4400" data-nearby="Fort, Museum, Market" data-society="Sri Venkateswara Villa">Sri Venkateswara Villa - Chandragiri Road</option>
+                            <option value="Srinivasa Towers - M.R. Palli" data-price="4900" data-nearby="Shopping Mall, Hospital, Schools" data-society="Srinivasa Towers">Srinivasa Towers - M.R. Palli</option>
+                            <option value="Balaji Gardens - Mangalam Road" data-price="4500" data-nearby="Temple, Market, Park" data-society="Balaji Gardens">Balaji Gardens - Mangalam Road</option>
+                            <option value="Tirupati Heights - Gandhi Road" data-price="5100" data-nearby="Central Market, Bus Stand, Hospital" data-society="Tirupati Heights">Tirupati Heights - Gandhi Road</option>
+                            <option value="SVU Staff Quarters - SV University" data-price="4100" data-nearby="University, Library, Sports Complex" data-society="SVU Staff Quarters">SVU Staff Quarters - SV University</option>
+                            <option value="Temple View Residency - K.T. Road" data-price="4700" data-nearby="Temple, Market, Schools" data-society="Temple View Residency">Temple View Residency - K.T. Road</option>
+                            <option value="Annarao Colony Flats - Annarao Circle" data-price="4600" data-nearby="Shopping Complex, Hospital, Park" data-society="Annarao Colony Flats">Annarao Colony Flats - Annarao Circle</option>
+                            <option value="Tirumala Gardens - Tirumala Bypass Road" data-price="5300" data-nearby="Temple, Shopping Mall, Park" data-society="Tirumala Gardens">Tirumala Gardens - Tirumala Bypass Road</option>
+                            <option value="Krishna Residency - Leela Mahal" data-price="4800" data-nearby="Theatre, Market, Hospital" data-society="Krishna Residency">Krishna Residency - Leela Mahal</option>
+                            <option value="Renigunta Villa - Renigunta Road" data-price="4300" data-nearby="Airport, Railway Station, Market" data-society="Renigunta Villa">Renigunta Villa - Renigunta Road</option>
+                            <option value="SV Gardens - SV University Road" data-price="4200" data-nearby="University, Hospital, Library" data-society="SV Gardens">SV Gardens - SV University Road</option>
+                            <option value="Kapileswara Residency - Kapila Theertham Road" data-price="4900" data-nearby="Temple, Park, Schools" data-society="Kapileswara Residency">Kapileswara Residency - Kapila Theertham Road</option>
+                            <option value="Tiruchanur Villa - Tiruchanur Road" data-price="4500" data-nearby="Temple, Market, Bus Stop" data-society="Tiruchanur Villa">Tiruchanur Villa - Tiruchanur Road</option>
+                            <option value="Railway Colony Flats - Railway Station Road" data-price="4000" data-nearby="Railway Station, Market, Hospital" data-society="Railway Colony Flats">Railway Colony Flats - Railway Station Road</option>
+                            <option value="Padmavathi Towers - Padmavathi Nagar" data-price="4800" data-nearby="Shopping Mall, Schools, Park" data-society="Padmavathi Towers">Padmavathi Towers - Padmavathi Nagar</option>
+                            <option value="Chandragiri Heights - Chandragiri Road" data-price="4600" data-nearby="Fort, Museum, Market" data-society="Chandragiri Heights">Chandragiri Heights - Chandragiri Road</option>
+                            <option value="MR Palli Residency - M.R. Palli" data-price="5000" data-nearby="Shopping Complex, Hospital, Schools" data-society="MR Palli Residency">MR Palli Residency - M.R. Palli</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Society</label>
+                        <input type="text" name="society" readonly class="input-field bg-opacity-50">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Nearby Locations</label>
+                        <input type="text" name="nearby" readonly class="input-field bg-opacity-50">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Price per Sqft</label>
+                        <input type="number" name="price_per_sqft" readonly class="input-field bg-opacity-50">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Property Details -->
+            <div class="form-group">
+                <h3 class="text-lg font-semibold mb-4">Property Details</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Property Type</label>
+                        <select name="propertyType" onchange="updatePropertyOptions()" class="input-field" required>
+                            <option value="">Select type</option>
+                            <option value="Apartment">Apartment</option>
+                            <option value="Villa">Villa</option>
+                            <option value="Duplex">Duplex</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Area (sqft)</label>
+                        <select name="area" class="input-field" required>
+                            <option value="">Select area</option>
+                            <option value="1000">1000 sqft</option>
+                            <option value="1500">1500 sqft</option>
+                            <option value="2000">2000 sqft</option>
+                            <option value="2500">2500 sqft</option>
+                            <option value="3000">3000 sqft</option>
+                            <option value="3500">3500 sqft</option>
+                            <option value="4000">4000 sqft</option>
+                            <option value="4500">4500 sqft</option>
+                            <option value="5000">5000 sqft</option>
+                            <option value="5500">5500 sqft</option>
+                            <option value="6000">6000 sqft</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Bedrooms</label>
+                            <select name="bedRoom" class="input-field" required>
+                                <option value="">Select bedrooms</option>
+                                <option value="1">1 BHK</option>
+                                <option value="2">2 BHK</option>
+                                <option value="3">3 BHK</option>
+                                <option value="4">4 BHK</option>
+                                <option value="5">5 BHK</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Bathrooms</label>
+                            <select name="bathroom" class="input-field" required>
+                                <option value="">Select bathrooms</option>
+                                <option value="1">1 Bathroom</option>
+                                <option value="2">2 Bathrooms</option>
+                                <option value="3">3 Bathrooms</option>
+                                <option value="4">4 Bathrooms</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Balconies</label>
+                            <select name="balcony" class="input-field" required>
+                                <option value="">Select balconies</option>
+                                <option value="0">No Balcony</option>
+                                <option value="1">1 Balcony</option>
+                                <option value="2">2 Balconies</option>
+                                <option value="3">3 Balconies</option>
+                                <option value="4">4 Balconies</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Additional Rooms</label>
+                            <select name="additionalRoom" class="input-field" required>
+                                <option value="">Select additional rooms</option>
+                                <option value="0">No Additional Room</option>
+                                <option value="1">1 Additional Room</option>
+                                <option value="2">2 Additional Rooms</option>
+                                <option value="3">3 Additional Rooms</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Floor Number</label>
+                        <select name="floorNum" class="input-field" required>
+                            <option value="">Select floor</option>
+                            <!-- Options will be populated by JavaScript based on property type -->
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Prediction Button and Result -->
+        <div class="mt-6 space-y-4">
+            <button onclick="predictPrice()" class="btn-primary w-full py-3 text-lg font-semibold">
+                Predict Price
+            </button>
+            <div id="prediction-result" class="form-group hidden">
+                <h3 class="text-lg font-semibold mb-2">Predicted Price</h3>
+                <p id="predicted-price" class="text-2xl font-bold" style="color: var(--accent)"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updatePropertyOptions() {
+            const propertyType = document.querySelector('select[name="propertyType"]').value;
+            const floorSelect = document.querySelector('select[name="floorNum"]');
+            const areaSelect = document.querySelector('select[name="area"]');
+            
+            // Clear existing options
+            floorSelect.innerHTML = '<option value="">Select floor</option>';
+            
+            if (propertyType === 'Apartment') {
+                // For apartments: Ground + 9 floors (10 total), higher floor = lower price
+                for (let i = 0; i <= 9; i++) {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = i === 0 ? 'Ground Floor' : `Floor ${i}`;
+                    floorSelect.appendChild(option);
+                }
+            } else if (propertyType === 'Villa') {
+                // For villas: Ground + 2 floors (3 total), higher floor = higher price
+                for (let i = 0; i <= 2; i++) {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = i === 0 ? 'Ground Floor' : `Floor ${i}`;
+                    floorSelect.appendChild(option);
+                }
+            } else if (propertyType === 'Duplex') {
+                // For duplex: Ground + 1 floor (2 total), higher floor = higher price
+                for (let i = 0; i <= 1; i++) {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = i === 0 ? 'Ground Floor' : `Floor ${i}`;
+                    floorSelect.appendChild(option);
+                }
+            }
+
+            // Update area min/max based on property type
+            const areaOptions = Array.from(areaSelect.options);
+            areaOptions.forEach(option => {
+                const area = parseInt(option.value);
+                if (!isNaN(area)) {
+                    if (propertyType === 'Apartment') {
+                        option.style.display = area <= 3000 ? '' : 'none';
+                    } else if (propertyType === 'Villa') {
+                        option.style.display = area >= 2000 && area <= 6000 ? '' : 'none';
+                    } else if (propertyType === 'Duplex') {
+                        option.style.display = area >= 1500 && area <= 4000 ? '' : 'none';
+                    }
+                }
+            });
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+        }
+
+        // Load saved theme preference
+        if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('light-mode');
+        }
+
+        function updateLocationDetails(address) {
+            const selectedOption = document.querySelector(`option[value="${address}"]`);
+            if (selectedOption) {
+                const price = selectedOption.dataset.price;
+                const nearby = selectedOption.dataset.nearby;
+                const society = selectedOption.dataset.society;
+
+                document.querySelector('input[name="price_per_sqft"]').value = price;
+                document.querySelector('input[name="nearby"]').value = nearby;
+                document.querySelector('input[name="society"]').value = society;
+            }
+        }
+
+        async function predictPrice() {
+            const propertyType = document.querySelector('select[name="propertyType"]').value;
+            let basePrice = parseFloat(document.querySelector('input[name="price_per_sqft"]').value);
+            const area = parseFloat(document.querySelector('select[name="area"]').value);
+            const bedRoom = parseInt(document.querySelector('select[name="bedRoom"]').value);
+            const bathroom = parseInt(document.querySelector('select[name="bathroom"]').value);
+            const balcony = parseInt(document.querySelector('select[name="balcony"]').value);
+            const additionalRoom = parseInt(document.querySelector('select[name="additionalRoom"]').value);
+            const floorNum = parseInt(document.querySelector('select[name="floorNum"]').value);
+
+            // Property type adjustments
+            if (propertyType === 'Villa') {
+                basePrice *= 1.2; // 20% premium for villas
+            } else if (propertyType === 'Duplex') {
+                basePrice *= 1.1; // 10% premium for duplex
+            }
+
+            // Floor number adjustments
+            if (propertyType === 'Apartment') {
+                // Higher floors decrease price (5% decrease per floor)
+                basePrice *= (1 - (floorNum * 0.05));
+            } else {
+                // For Villa and Duplex, higher floors increase price
+                basePrice *= (1 + (floorNum * 0.1));
+            }
+
+            // Bedroom adjustments (10% increase per bedroom)
+            basePrice *= (1 + ((bedRoom - 1) * 0.1));
+
+            // Bathroom adjustments (5% increase per bathroom)
+            basePrice *= (1 + ((bathroom - 1) * 0.05));
+
+            // Balcony adjustments (3% increase per balcony)
+            basePrice *= (1 + (balcony * 0.03));
+
+            // Additional room adjustments (7% increase per room)
+            basePrice *= (1 + (additionalRoom * 0.07));
+
+            const data = {
+                price_per_sqft: basePrice,
+                area: area,
+                bedRoom: bedRoom,
+                bathroom: bathroom,
+                balcony: balcony,
+                additionalRoom: additionalRoom,
+                floorNum: floorNum
+            };
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                
+                if (result.error) {
+                    throw new Error(result.error);
+                }
+
+                const resultDiv = document.getElementById('prediction-result');
+                const predictedPrice = document.getElementById('predicted-price');
+                resultDiv.classList.remove('hidden');
+                predictedPrice.textContent = result.formatted_price;
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>
